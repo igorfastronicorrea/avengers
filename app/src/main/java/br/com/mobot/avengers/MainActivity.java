@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecyclerViewOnClickListener {
 
     private RecyclerView rvHeroes;
     private LinearLayoutManager linearLayoutManager;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         getHeroes();
     }
 
-    private void getHeroes(){
+    private void getHeroes() {
         apiInterface = APIClient.getClient().create(APIInterface.class);
         Call<HeroesModel> call = apiInterface.getHeroes();
 
@@ -49,14 +50,14 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<HeroesModel> call, Response<HeroesModel> response) {
 
                 dataHeroes = response.body().getHeroes();
-
                 linearLayoutManager = new LinearLayoutManager(MainActivity.this);
                 adapter = new HeroesAdapter(getApplicationContext(), dataHeroes);
-                rvHeroes.setFocusable(false);
-                rvHeroes.setHasFixedSize(true);
+                //rvHeroes.setFocusable(false);
+                //rvHeroes.setHasFixedSize(true);
                 rvHeroes.setLayoutManager(linearLayoutManager);
                 rvHeroes.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
+                adapter.setRecycleViewOnClickListener(MainActivity.this);
 
                 progressBar.setVisibility(View.GONE);
             }
@@ -67,5 +68,10 @@ public class MainActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
             }
         });
+    }
+
+    @Override
+    public void onClickListener(View v, int position, int id) {
+        Toast.makeText(MainActivity.this, dataHeroes.get(position).getName(), Toast.LENGTH_LONG).show();
     }
 }

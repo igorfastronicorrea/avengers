@@ -13,12 +13,15 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import retrofit2.Callback;
+
 public class HeroesAdapter extends RecyclerView.Adapter<HeroesAdapter.ViewHolder> {
 
     private Context context;
     private List<HeroModel> data;
+    private RecyclerViewOnClickListener recyclerViewOnClickListener;
 
-    public HeroesAdapter(Context mContext, List<HeroModel> mData){
+    public HeroesAdapter(Context mContext, List<HeroModel> mData) {
         this.context = mContext;
         this.data = mData;
     }
@@ -38,12 +41,16 @@ public class HeroesAdapter extends RecyclerView.Adapter<HeroesAdapter.ViewHolder
         Glide.with(context).load(data.get(i).getThumbnail()).into(viewHolder.imgThumbnail);
     }
 
-    @Override
-    public int getItemCount() {
-        return data.size();
+    public void setRecycleViewOnClickListener(RecyclerViewOnClickListener r) {
+        recyclerViewOnClickListener = r;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    @Override
+    public int getItemCount() {
+        return data != null ? data.size() : 0;
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView imgThumbnail;
         private TextView txtName;
@@ -53,6 +60,15 @@ public class HeroesAdapter extends RecyclerView.Adapter<HeroesAdapter.ViewHolder
 
             imgThumbnail = itemView.findViewById(R.id.imgThumbnail);
             txtName = itemView.findViewById(R.id.txtName);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (recyclerViewOnClickListener != null){
+                recyclerViewOnClickListener.onClickListener(v, getLayoutPosition(), data.get(getLayoutPosition()).getId());
+            }
         }
     }
 }
